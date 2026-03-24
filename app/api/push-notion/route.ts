@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { pushProspect } from '@/lib/notion-client'
+import type { Lang } from '@/lib/questions'
+import type { BrandChunks } from '@/lib/brand-mapper'
 
 export async function POST(req: NextRequest) {
-  const { answers, chunks, lang } = await req.json()
+  const { answers, chunks, lang } = await req.json() as {
+    answers: string[]
+    chunks: BrandChunks
+    lang: Lang
+  }
 
-  // TODO Phase 4: create Notion page in Prospects DB
-  console.log('push-notion stub', { answers, chunks, lang })
-
-  return NextResponse.json({ ok: true })
+  const pageId = await pushProspect(answers, chunks, lang)
+  return NextResponse.json({ ok: true, pageId })
 }
