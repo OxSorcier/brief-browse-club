@@ -4,8 +4,6 @@ import { pushProspect } from '@/lib/notion-client'
 import type { Lang } from '@/lib/questions'
 import type { BrandChunks } from '@/lib/brand-mapper'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(req: NextRequest) {
   const { answers, chunks, lang } = await req.json() as {
     answers: string[]
@@ -29,6 +27,8 @@ async function notifyErwan(
   lang: Lang,
   pageId: string
 ) {
+  if (!process.env.RESEND_API_KEY) return
+  const resend = new Resend(process.env.RESEND_API_KEY)
   const notionUrl = `https://notion.so/${pageId.replace(/-/g, '')}`
   const label = lang === 'fr' ? 'Nouveau prospect' : 'New prospect'
   const questions = lang === 'fr'
